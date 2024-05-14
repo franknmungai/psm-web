@@ -1,38 +1,83 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+```js
+npm install bcrypt
 
-## Getting Started
+const bcrypt = require('bcrypt');
 
-First, run the development server:
+// Function to hash a password
+const hashPassword = async (password) => {
+  try {
+    const saltRounds = 10; // You can adjust this number based on your security needs
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    return hashedPassword;
+  } catch (error) {
+    throw new Error('Error hashing password');
+  }
+};
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+// Function to compare a password with its hash
+const comparePassword = async (password, hashedPassword) => {
+  try {
+    const match = await bcrypt.compare(password, hashedPassword);
+    return match;
+  } catch (error) {
+    throw new Error('Error comparing passwords');
+  }
+};
+
+module.exports = {
+  hashPassword,
+  comparePassword,
+};
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+```js
+import { hashPassword } from '../path/to/passwordUtils';
+import db from '../path/to/database';
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+const registerUser = async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const hashedPassword = await hashPassword(password);
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+    // Save username and hashedPassword to your database
+    await db.saveUser({ username, password: hashedPassword });
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+    res.status(200).json({ message: 'User registered successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+export default registerUser;
+```
 
-## Learn More
+```js
+const crypto = require('crypto');
 
-To learn more about Next.js, take a look at the following resources:
+// Encryption function
+const encryptPassword = (password, encryptionKey) => {
+  const cipher = crypto.createCipher('aes-256-cbc', encryptionKey);
+  let encryptedPassword = cipher.update(password, 'utf8', 'hex');
+  encryptedPassword += cipher.final('hex');
+  return encryptedPassword;
+};
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+// Decryption function
+const decryptPassword = (encryptedPassword, encryptionKey) => {
+  const decipher = crypto.createDecipher('aes-256-cbc', encryptionKey);
+  let decryptedPassword = decipher.update(encryptedPassword, 'hex', 'utf8');
+  decryptedPassword += decipher.final('utf8');
+  return decryptedPassword;
+};
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+// Example usage
+const password = 'mySecretPassword';
+const encryptionKey = 'mySecretKey';
 
-## Deploy on Vercel
+const encryptedPassword = encryptPassword(password, encryptionKey);
+console.log('Encrypted Password:', encryptedPassword);
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+const decryptedPassword = decryptPassword(encryptedPassword, encryptionKey);
+console.log('Decrypted Password:', decryptedPassword);
+```

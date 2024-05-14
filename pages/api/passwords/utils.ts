@@ -1,0 +1,2 @@
+export const key =
+  'super-str-key-87-7854102568987-4525789741235689752-47sde4de51de564d85w1sw54wd';
