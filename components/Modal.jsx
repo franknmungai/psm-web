@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import { useRef } from 'react';
+import toast from 'react-hot-toast';
 
 const Modal = () => {
   const usernameRef = useRef();
@@ -29,10 +30,12 @@ const Modal = () => {
     if (!resp.ok) {
       const error = await resp.json();
       console.log({ error });
-      return; //todo: handle
+      return toast.error('Error storing password');
     }
 
     const data = await resp.json();
+
+    toast.success('Password created successfully');
     console.log(data);
     router.reload();
   };

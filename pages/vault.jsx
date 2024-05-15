@@ -28,6 +28,16 @@ const Vault = (props) => {
           {passwords.map((password) => (
             <PasswordCard password={password} />
           ))}
+
+          {!passwords.length && (
+            <div className="flex flex-col justify-center items-center">
+              <img src="/icons/no-pass.jpg" alt="" className="w-84" />
+
+              <p className="text-2xl font-light text-center">
+                No password saved. Get started by saving a new password
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
