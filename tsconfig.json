@@ -23,7 +23,8 @@
     "**/*.ts",
     "**/*.tsx",
     "pages/vault.jsx",
-    "components/Modal.jsx"
+    "components/Modal.tsx",
+    "pages/index.jsx"
   ],
   "exclude": ["node_modules"]
 }

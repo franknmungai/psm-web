@@ -1,4 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import prisma from '@/utils/db';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { encrypt } from './utils';
@@ -11,14 +10,18 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  const { username, password, website, user_id } = JSON.parse(req.body);
+  const { username, password, website, user_id, id } = JSON.parse(req.body);
+  console.log('________-REQ BODY__________');
 
-  console.log({ username, password, website, user_id });
+  console.log(req.body);
 
   const encryptedPassword = encrypt(password)!;
 
   try {
-    const data = await prisma.passwords.create({
+    await prisma.passwords.update({
+      where: {
+        id,
+      },
       data: {
         username,
         password: encryptedPassword,
@@ -28,7 +31,7 @@ export default async function handler(
     });
 
     res.status(200).send({
-      message: 'Password Saved Successfully',
+      message: 'Password Updated Successfully',
     });
   } catch (error: any) {
     // console.clear();

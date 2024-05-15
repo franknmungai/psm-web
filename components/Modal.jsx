@@ -1,9 +1,11 @@
+import { useRouter } from 'next/router';
 import { useRef } from 'react';
 
 const Modal = () => {
   const usernameRef = useRef();
   const passwordRef = useRef();
   const websiteRef = useRef();
+  const router = useRouter();
 
   const createPassword = async (e) => {
     e.preventDefault();
@@ -32,6 +34,7 @@ const Modal = () => {
 
     const data = await resp.json();
     console.log(data);
+    router.reload();
   };
 
   return (
