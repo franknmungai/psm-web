@@ -3,12 +3,15 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { MdOutlineVisibility, MdOutlineVisibilityOff } from 'react-icons/md';
 import toast from 'react-hot-toast';
+import { useRouter } from 'next/router';
 
 const PasswordCard = ({ password: passwordData }) => {
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState(passwordData.username);
   const [password, setPassword] = useState(passwordData.password);
+
+  const router = useRouter();
 
   const updatePassword = async () => {
     setLoading(true);
@@ -31,6 +34,24 @@ const PasswordCard = ({ password: passwordData }) => {
       toast.success('Password updated successfully 🎊');
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const deletePassword = async () => {
+    if (window.confirm('Are you sure you want delete this password?')) {
+      const resp = await fetch('/api/passwords/delete', {
+        method: 'PUT',
+        body: JSON.stringify({ id: passwordData.id }),
+      });
+
+      const data = await resp.json();
+      console.log(data);
+      if (!resp.ok) {
+        return toast.error('Error deleting password');
+      }
+
+      toast.success('Password deleted successfully 🎉');
+      router.reload();
     }
   };
   return (
@@ -79,7 +100,9 @@ const PasswordCard = ({ password: passwordData }) => {
         </div>
 
         <div className="w-full flex justify-between mt-20">
-          <button className="my-btn bg-red-400">Delete</button>
+          <button className="my-btn bg-red-400" onClick={deletePassword}>
+            Delete
+          </button>
           <button
             className="my-btn bg-green-500"
             onClick={updatePassword}
