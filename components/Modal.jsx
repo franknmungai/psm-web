@@ -1,5 +1,6 @@
+import axios from 'axios';
 import { useRouter } from 'next/router';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
 const Modal = () => {
@@ -7,6 +8,7 @@ const Modal = () => {
   const passwordRef = useRef();
   const websiteRef = useRef();
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const createPassword = async (e) => {
     e.preventDefault();
@@ -15,28 +17,25 @@ const Modal = () => {
     const password = passwordRef.current.value;
     const website = websiteRef.current.value;
 
-    console.log({ username, password, website });
-
-    const resp = await fetch('/api/passwords/create', {
-      method: 'POST',
-      body: JSON.stringify({
+    try {
+      setLoading(true);
+      const resp = await axios.post('/api/passwords/create', {
         username,
         password,
         website,
         user_id: '123',
-      }),
-    });
+      });
 
-    if (!resp.ok) {
-      const error = await resp.json();
+      const data = resp.data;
+
+      toast.success('Password created successfully 🎊');
+      console.log(data);
+    } catch (error) {
       console.log({ error });
-      return toast.error('Error storing password');
+      toast.success('Error saving the password');
     }
 
-    const data = await resp.json();
-
-    toast.success('Password created successfully');
-    console.log(data);
+    setLoading(false);
     router.reload();
   };
 
@@ -86,8 +85,16 @@ const Modal = () => {
               />
             </div>
 
-            <button className="my-btn bg-green-500 w-4/5" type="submit">
-              Save Password
+            <button
+              className="my-btn bg-green-500 w-4/5"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? (
+                <span className="loading loading-dots"></span>
+              ) : (
+                'Save Password'
+              )}
             </button>
           </form>
         </div>

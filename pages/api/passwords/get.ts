@@ -30,10 +30,7 @@ export default async function handler(
       };
     });
 
-    console.log('____________AFTER MAPPING____________');
-    console.log({ passwordData });
-
-    res.status(200).json(passwordData);
+    return res.status(200).json(passwordData);
   } catch (error) {
     console.clear();
     console.log(error);

@@ -1,13 +1,29 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PasswordCard from '@/components/PasswordCard';
 import Modal from '@/components/Modal';
 import prisma from '@/utils/db';
+import axios from 'axios';
 
 //NEXT.JS TAILWINDCSS
 const Vault = (props) => {
-  console.log(JSON.parse(props.passwordData));
+  const [passwords, setPasswords] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [passwords, setPasswords] = useState(JSON.parse(props.passwordData));
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      try {
+        const resp = await axios.get('/api/passwords/get');
+
+        const passwordData = resp.data;
+
+        setPasswords(passwordData);
+      } catch (error) {
+        console.log(error);
+      }
+      setLoading(false);
+    })();
+  }, []);
 
   return (
     <div className="containter w-full">
@@ -30,13 +46,19 @@ const Vault = (props) => {
           ))}
         </div>
 
-        {!passwords.length && (
+        {!loading && !passwords.length && (
           <div className="flex flex-col justify-center items-center">
             <img src="/icons/no-pass.jpg" alt="" className="w-80" />
 
             <p className="text-2xl font-light text-center">
               No password saved. Get started by saving a new password
             </p>
+          </div>
+        )}
+
+        {loading && (
+          <div className="w-full h-full flex items-center justify-center">
+            <span className="loading-dots loading-lg"></span>
           </div>
         )}
       </div>
@@ -48,26 +70,28 @@ const Vault = (props) => {
 
 export default Vault;
 
-export async function getServerSideProps() {
-  try {
-    const resp = await fetch('http://localhost:3000/api/passwords/get');
+// export async function getServerSideProps() {
+//   try {
+//     const resp = await fetch('http://localhost:3000/api/passwords/get');
 
-    let passwordData = await resp.json();
-    passwordData = JSON.stringify(passwordData);
+//     let passwordData = await resp.json();
+//     passwordData = JSON.stringify(passwordData);
 
-    return {
-      props: {
-        passwordData,
-      },
-    };
-  } catch (error) {
-    console.log('________ERROR FETCHING PASSWORDS__________');
-    console.log(error);
+//     console.log({ passwordData });
 
-    // return {
-    //   props: {
-    //     passwordData: '[]',
-    //   },
-    // };
-  }
-}
+//     return {
+//       props: {
+//         passwordData,
+//       },
+//     };
+//   } catch (error) {
+//     console.log('________ERROR FETCHING PASSWORDS__________');
+//     console.log(error);
+
+//     // return {
+//     //   props: {
+//     //     passwordData: '[]',
+//     //   },
+//     // };
+//   }
+// }
