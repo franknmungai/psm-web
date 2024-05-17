@@ -3,6 +3,7 @@ import PasswordCard from '@/components/PasswordCard';
 import Modal from '@/components/Modal';
 import prisma from '@/utils/db';
 import axios from 'axios';
+import { useRouter } from 'next/router';
 
 //NEXT.JS TAILWINDCSS
 const Vault = (props) => {

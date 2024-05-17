@@ -8,10 +8,11 @@ const Home = () => {
   const passwordRef = useRef();
 
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const handleAuth = (e) => {
+    setLoading(true);
     e.preventDefault();
-    console.log();
     const username = usernameRef.current.value === 'maryann01';
     const password = passwordRef.current.value === '@CyberTech_2024';
 
@@ -19,9 +20,11 @@ const Home = () => {
     console.log('pass: ' + passwordRef.current.value);
     if (!username || !password) {
       toast.error('Invalid credentials');
+      setLoading(false);
       return;
     }
 
+    setLoading(false);
     router.push('/vault');
   };
 
@@ -59,7 +62,9 @@ const Home = () => {
             ref={passwordRef}
           />
 
-          <button className="btn bg-green-500 text-white w-3/4">Login</button>
+          <button className="btn bg-green-500 text-white w-3/4">
+            {loading ? <span className="loading-dots"></span> : 'Login'}
+          </button>
         </form>
       </div>
     </div>
